@@ -48,7 +48,9 @@ def init(format: str, settings: str = 'settings', secrets: str = '.secrets') \
             f.write(text)
     with open(DIR.joinpath('settings.py'), 'w', encoding='utf-8') as f:
         f.write(
-            python_code.format(f'{settings}.{format}', f'{secrets}.{format}'))
+            python_code.format(
+                settings + '.' + format,
+                secrets + '.' + format))
 
 
 def main() -> None:
