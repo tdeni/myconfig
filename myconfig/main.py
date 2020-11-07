@@ -36,18 +36,18 @@ def parser(files: list) -> dict:
     try:
         if format == 'json':
             for file in files:
-                with open(DIR.joinpath(file)) as f:
+                with open(str(DIR.joinpath(file))) as f:
                     try:
                         data.update(j_load(f))
                     except JSONDecodeError:
                         pass
         elif format == 'toml':
             for file in files:
-                with open(DIR.joinpath(file)) as f:
+                with open(str(DIR.joinpath(file))) as f:
                     data.update(t_laod(f))
         elif format == 'yaml':
             for file in files:
-                with open(DIR.joinpath(file)) as f:
+                with open(str(DIR.joinpath(file))) as f:
                     data.update(y_load(f))
         else:
             raise Exception('Unknown format.')
