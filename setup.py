@@ -1,7 +1,10 @@
-from re import search
 from pathlib import Path
+from re import search
 
-from setuptools import setup
+try:
+    from setuptools import setup
+except ImportError:
+    from distutils.core import setup
 
 with open('myconfig/__init__.py', encoding='utf-8') as f:
     version = search(r"__version__ = '(.*?)'", f.read()).group(1)
@@ -17,6 +20,29 @@ setup(
     long_description_content_type='text/markdown',
     url='https://github.com/azureswastika/myconfig',
     author='Deni',
-    license='MIT',
+    license='MIT license',
     packages=['myconfig'],
+    keywords=['myconfig', 'config', 'project config'],
+    classifiers=[
+        'Development Status :: 2 - Pre-Alpha',
+        'License :: OSI Approved :: MIT License',
+        'Programming Language :: Python',
+        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3 :: Only',
+    ],
+    entry_points={
+        'console_scripts': [
+            'myconfig = myconfig.__init__:main'
+        ]
+    },
+    install_requires=[
+        'fire>=0.3.1',
+        'PyYAML>=5.3.1',
+        'toml>=0.10.2'
+    ],
+    python_requires=">=3.5",
 )
