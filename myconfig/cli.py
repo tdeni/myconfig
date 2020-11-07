@@ -33,7 +33,11 @@ def init(format: str, settings: str = 'settings', secrets: str = '.secrets') \
     if format not in FORMATS:
         raise Exception('Unknown format.')
     for file in [settings, secrets]:
-        open(DIR.joinpath(f'{file}.{format}'), 'a', encoding='utf-8').close()
+        f = open(DIR.joinpath(
+            file + '.' + format),
+            'a',
+            encoding='utf-8')
+        f.close()
 
     if gitignore.exists():
         file = gitignore.read_text(encoding='utf-8')
