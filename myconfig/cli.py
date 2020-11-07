@@ -24,7 +24,7 @@ def init(format: str, settings: str = 'settings', secrets: str = '.secrets') \
         format (str): File format.
         settings (str, optional): Default config file. Defaults to 'settings'.
         secrets (str, optional): Default secret config file.\
-            Defaults to '.secrets'.
+        Defaults to '.secrets'.
 
     Raises:
         Exception: Unknown format.
@@ -34,7 +34,7 @@ def init(format: str, settings: str = 'settings', secrets: str = '.secrets') \
         raise Exception('Unknown format.')
     for file in [settings, secrets]:
         f = open(DIR.joinpath(
-            file + '.' + format),
+            '{}.{}'.format(file, format)),
             'a',
             encoding='utf-8')
         f.close()
@@ -49,8 +49,8 @@ def init(format: str, settings: str = 'settings', secrets: str = '.secrets') \
     with open(DIR.joinpath('settings.py'), 'w', encoding='utf-8') as f:
         f.write(
             python_code.format(
-                settings + '.' + format,
-                secrets + '.' + format))
+                '{}.{}'.format(settings, format),
+                '{}.{}'.format(secrets, format)))
 
 
 def main() -> None:
