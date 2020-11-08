@@ -33,7 +33,7 @@ Also `.secrets.*` was added to `.gitignore`.
 
 ### Using Myconfig
 
-Add to `settings.py` common project settings:
+Add to `settings.json` common project settings:
 
 ```json
 {
@@ -45,7 +45,7 @@ Add to `settings.py` common project settings:
 }
 ```
 
-Or put private settings in `.secrets.py`:
+Or put private settings in `.secrets.json`:
 
 ```json
 {
