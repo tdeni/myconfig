@@ -126,3 +126,6 @@ dmypy.json
 
 # VScode
 .vscode/
+
+#examples env
+!examples/*/.env
