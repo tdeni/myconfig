@@ -12,14 +12,14 @@ ENV = DIR.joinpath('.env')
 
 
 class MyConfig():
-    def __init__(self, filenames: list) -> None:
+    def __init__(self, filenames: list = None) -> None:
         self.config = parser(filenames)
 
     def __getattr__(self, key) -> Any:
         return self.config.get(key, None)
 
 
-def parser(files: list) -> dict:
+def parser(files: list = None) -> dict:
     '''This is a function that parses files.
 
     Args:
@@ -32,30 +32,30 @@ def parser(files: list) -> dict:
     Returns:
         dict: Parsed data.
     '''
-
-    for i, file in enumerate(files):
-        files[i] = str(DIR.joinpath(file))
     data = dict()
-    for file in files:
-        file_data = dict()
-        try:
-            with open(file, encoding='utf-8') as f:
-                format = file.split('.')[-1]
-                if format == 'json':
-                    try:
-                        file_data = json.load(f)
-                    except JSONDecodeError:
-                        pass
-                elif format == 'toml':
-                    file_data = toml.load(f)
-                elif format == 'yaml':
-                    file_data = yaml.safe_load(f)
-                data.update(file_data)
-        except FileNotFoundError:
-            print(
-                'File not found. ' +
-                'Specify the correct path to the file: {}'.format(
-                    file.split('\\')[-1]))
+    if files:
+        for i, file in enumerate(files):
+            files[i] = str(DIR.joinpath(file))
+        for file in files:
+            file_data = dict()
+            try:
+                with open(file, encoding='utf-8') as f:
+                    format = file.split('.')[-1]
+                    if format == 'json':
+                        try:
+                            file_data = json.load(f)
+                        except JSONDecodeError:
+                            pass
+                    elif format == 'toml':
+                        file_data = toml.load(f)
+                    elif format == 'yaml':
+                        file_data = yaml.safe_load(f)
+                    data.update(file_data)
+            except FileNotFoundError:
+                print(
+                    'File not found. ' +
+                    'Specify the correct path to the file: {}'.format(
+                        file.split('\\')[-1]))
     if ENV.exists():
         env_data = env_parse(ENV)
         data.update(env_data)
