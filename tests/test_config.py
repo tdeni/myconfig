@@ -1,4 +1,6 @@
 import json
+import os
+
 from myconfig import MyConfig
 
 
@@ -10,3 +12,5 @@ def test_config():
 
     config = MyConfig([path])
     assert config.var1 == data.get('var1')
+    assert config.var2 == data.get('var2')
+    os.remove(path)
