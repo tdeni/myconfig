@@ -19,7 +19,7 @@ pip install myconfig
 
 ```bash
 cd project/path/
-myconfig init json
+myconfig -i json
 
 
 Configuring your Python project environment
@@ -29,7 +29,7 @@ The `settings.json` file was created to hold public settings and `.secrets.json`
 Also `.secrets.*` was added to `.gitignore`.
 ```
 
-> You can also use other formats: myconfig init \<*format*> (**json** | **yaml** | **toml**)
+> You can also use other formats: **myconfig -i** \<*format*> (**json** | **yaml** | **toml**)
 
 ### Using Myconfig
 
@@ -68,4 +68,12 @@ print(config.database.get('name'))
 >from myconfig import MyConfig
 >
 >config = MyConfig(['settings.json', '.secrets.json'])
+>```
+>
+> You can also only take variables from the .env file: **myconfig -i**
+>
+>```py
+>from myconfig import MyConfig
+>
+>config = MyConfig()
 >```
