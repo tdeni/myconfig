@@ -41,7 +41,6 @@ setup(
         ]
     },
     install_requires=[
-        'fire>=0.3.1',
         'PyYAML>=5.3.1',
         'toml>=0.10.2'
     ],

@@ -1,8 +1,8 @@
 import json
 from json.decoder import JSONDecodeError
 from pathlib import Path
-from typing import Any
 from re import search
+from typing import Any
 
 import toml
 import yaml
