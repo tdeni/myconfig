@@ -33,6 +33,9 @@ def parser(files: list = None) -> dict:
         dict: Parsed data.
     '''
     data = dict()
+    if ENV.exists():
+        env_data = env_parse(ENV)
+        data.update(env_data)
     if files:
         for i, file in enumerate(files):
             files[i] = str(DIR.joinpath(file))
@@ -56,9 +59,14 @@ def parser(files: list = None) -> dict:
                     'File not found. ' +
                     'Specify the correct path to the file: {}'.format(
                         file.split('\\')[-1]))
-    if ENV.exists():
-        env_data = env_parse(ENV)
-        data.update(env_data)
+    _ = [dict(), list()]
+    for key in data:
+        if '-' in key:
+            _[1].append(key)
+            _[0].update({key.replace('-', '_'): data[key]})
+    data.update(_[0])
+    for item in _[1]:
+        data.pop(item)
     return data
 
 
