@@ -1,12 +1,12 @@
 import argparse
 from pathlib import Path
 
-FORMATS = ['json', 'toml', 'yaml']
+FORMATS = ["json", "toml", "yaml"]
 
 DIR = Path.cwd()
 
-gitignore = DIR.joinpath('.gitignore')
-config_ignore = '\n\n# myconfig\n{}'
+gitignore = DIR.joinpath(".gitignore")
+config_ignore = "\n\n# myconfig\n{}"
 
 python_code = """from myconfig import MyConfig
 
@@ -19,8 +19,8 @@ config = MyConfig()
 """
 
 
-def init(format: str = None) -> None:
-    '''Creates the file myconfig.
+def init(format: str) -> None:
+    """Creates the file myconfig.
     Adds the path to the .settings file in .gitignore.
 
     Args:
@@ -31,48 +31,44 @@ def init(format: str = None) -> None:
 
     Raises:
         Exception: Unknown format.
-    '''
+    """
     if format:
-        settings = 'settings'
-        secrets = '.secrets'
+        settings = "settings"
+        secrets = ".secrets"
 
         if format not in FORMATS:
-            raise Exception('Unknown format.')
+            raise Exception("Unknown format.")
 
         for file in [settings, secrets]:
-            f = open(DIR.joinpath(
-                '{}.{}'.format(file, format)),
-                'a',
-                encoding='utf-8')
+            f = open(DIR.joinpath("{}.{}".format(file, format)), "a", encoding="utf-8")
             f.close()
 
-        with open(DIR.joinpath('settings.py'), 'w', encoding='utf-8') as f:
+        with open(DIR.joinpath("settings.py"), "w", encoding="utf-8") as f:
             f.write(
                 python_code.format(
-                    '{}.{}'.format(settings, format),
-                    '{}.{}'.format(secrets, format)))
+                    "{}.{}".format(settings, format), "{}.{}".format(secrets, format)
+                )
+            )
 
         if gitignore.exists():
-            file = gitignore.read_text(encoding='utf-8')
-            file += config_ignore.format(secrets + '.*')
-            with open(gitignore, 'r+', encoding='utf-8') as f:
-                text = f.read() + config_ignore.format(secrets + '.*')
-                f.seek(0)
-                f.write(text)
+            file = gitignore.read_text(encoding="utf-8")
+            file += config_ignore.format(secrets + ".*")
+            with open(gitignore, "r+", encoding="utf-8") as file:
+                text = file.read() + config_ignore.format(secrets + ".*")
+                file.seek(0)
+                file.write(text)
     else:
-        with open(DIR.joinpath('settings.py'), 'w', encoding='utf-8') as f:
-            f.write(python_env_only)
+        with open(DIR.joinpath("settings.py"), "w", encoding="utf-8") as file:
+            file.write(python_env_only)
 
 
 def main() -> None:
-    '''CLI function'''
+    """CLI function"""
     parser = argparse.ArgumentParser()
-    parser.add_argument('-i', '--init', default=None, type=str, nargs='?')
+    parser.add_argument("-i", "--init", default="json", type=str, nargs="?")
     args = parser.parse_args()
-    if args.init:
-        return init(args.init)
-    return init()
+    return init(args.init)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
