@@ -122,6 +122,7 @@ class MyConfig(metaclass=Singleton):
             for file in [settings, secrets]:
                 f = open(Path("{}.{}".format(file, fformat)), "a", encoding="utf-8")
                 f.close()
+                print("Created: {}.{}".format(file, fformat))
             with open(Path("settings.py"), "w", encoding="utf-8") as f:
                 f.write(
                     python_code.format(
@@ -139,6 +140,7 @@ class MyConfig(metaclass=Singleton):
         else:
             with open(Path("settings.py"), "w", encoding="utf-8") as file:
                 file.write(python_env_only)
+        print("Created: settings.py")
 
 
 def main() -> None:
