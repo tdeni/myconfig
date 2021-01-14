@@ -32,6 +32,9 @@ class Singleton(type):
 
 
 class PathDescriptor:
+    def __init__(self, name):
+        self.name = name
+
     def __set__(self, obj, value):
         value = [Path(path) for path in value]
         for path in value:
@@ -41,9 +44,6 @@ class PathDescriptor:
             if not path.exists():
                 raise OSError("There is no such file: {}".format(str(path.absolute())))
         obj.__dict__[self.name] = value
-
-    def __set_name__(self, owner, name):
-        self.name = name
 
 
 class MyConfig(metaclass=Singleton):
