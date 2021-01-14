@@ -47,7 +47,7 @@ class PathDescriptor:
 
 
 class MyConfig(metaclass=Singleton):
-    __filenames = PathDescriptor()
+    __filenames = PathDescriptor("_MyConfig__filenames")
     ENV = Path(".env")
 
     def __init__(self, filenames: List[str] = None) -> None:
