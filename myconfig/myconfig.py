@@ -122,7 +122,9 @@ class MyConfig(metaclass=Singleton):
                 raise Exception("Unknown format.")
 
             for file in [settings, secrets]:
-                f = open(str(Path("{}.{}".format(file, fformat))), "a", encoding="utf-8")
+                f = open(
+                    str(Path("{}.{}".format(file, fformat))), "a", encoding="utf-8"
+                )
                 f.close()
                 print("Created: {}.{}".format(file, fformat))
             file = open(str(Path("settings.py")), "w", encoding="utf-8")
