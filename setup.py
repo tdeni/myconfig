@@ -38,7 +38,7 @@ setup(
     ],
     entry_points={
         'console_scripts': [
-            'myconfig = myconfig.__init__:main'
+            'myconfig = myconfig:main'
         ]
     },
     install_requires=[

@@ -68,48 +68,50 @@ class MyConfig(metaclass=Singleton):
     def parser(self):
         for file in self.__filenames:
             file_data = dict()
-            with open(file, encoding="utf-8") as f:
-                format = str(file).split(".")[-1]
-                if format == "json":
-                    try:
-                        file_data = json.load(f)
-                    except JSONDecodeError:
-                        pass
-                elif format == "toml":
-                    file_data = toml.load(f)
-                elif format in ["yaml", "yml"]:
-                    file_data = yaml.safe_load(f)
+            f = open(str(file), encoding="utf-8")
+            fformat = str(file).split(".")[-1]
+            if fformat == "json":
+                try:
+                    file_data = json.load(f)
+                except JSONDecodeError:
+                    pass
+            elif fformat == "toml":
+                file_data = toml.load(f)
+            elif fformat in ["yaml", "yml"]:
+                file_data = yaml.safe_load(f)
             for key in file_data.keys():
                 self.__setattr__(key.replace("-", "_"), file_data[key])
+            f.close()
 
     def env_parse(self):
-        with open(self.ENV, encoding="utf-8") as file:
-            for line in file:
-                key, value = [x.strip() for x in line.strip("\n").split("=", 1)]
-                if value.isdigit():
-                    self.__setattr__(key, int(value))
-                elif value.lower() in ["true", "false"]:
-                    if value.lower() == "true":
-                        self.__setattr__(key, True)
-                        continue
-                    self.__setattr__(key, False)
-                elif value.startswith("[") and value.endswith("]"):
-                    value = [x.strip() for x in value[1:-1].split(",")]
-                    for i, el in enumerate(value):
-                        if el.isdigit():
-                            value[i] = int(el)
-                        elif el.lower() in ["true", "false"]:
-                            if el.lower() == "true":
-                                value[i] = True
-                                continue
-                            value[i] = False
-                        else:
-                            value[i] = el
-                    self.__setattr__(key, value)
-                elif value == "":
-                    self.__setattr__(key, None)
-                else:
-                    self.__setattr__(key, value)
+        file = open(str(self.ENV), encoding="utf-8")
+        for line in file:
+            key, value = [x.strip() for x in line.strip("\n").split("=", 1)]
+            if value.isdigit():
+                self.__setattr__(key, int(value))
+            elif value.lower() in ["true", "false"]:
+                if value.lower() == "true":
+                    self.__setattr__(key, True)
+                    continue
+                self.__setattr__(key, False)
+            elif value.startswith("[") and value.endswith("]"):
+                value = [x.strip() for x in value[1:-1].split(",")]
+                for i, el in enumerate(value):
+                    if el.isdigit():
+                        value[i] = int(el)
+                    elif el.lower() in ["true", "false"]:
+                        if el.lower() == "true":
+                            value[i] = True
+                            continue
+                        value[i] = False
+                    else:
+                        value[i] = el
+                self.__setattr__(key, value)
+            elif value == "":
+                self.__setattr__(key, None)
+            else:
+                self.__setattr__(key, value)
+        file.close()
 
     def init(fformat: str) -> None:
         if fformat:
@@ -120,26 +122,26 @@ class MyConfig(metaclass=Singleton):
                 raise Exception("Unknown format.")
 
             for file in [settings, secrets]:
-                f = open(Path("{}.{}".format(file, fformat)), "a", encoding="utf-8")
+                f = open(str(Path("{}.{}".format(file, fformat))), "a", encoding="utf-8")
                 f.close()
                 print("Created: {}.{}".format(file, fformat))
-            with open(Path("settings.py"), "w", encoding="utf-8") as f:
-                f.write(
-                    python_code.format(
-                        "{}.{}".format(settings, fformat),
-                        "{}.{}".format(secrets, fformat),
-                    )
+            file = open(str(Path("settings.py")), "w", encoding="utf-8")
+            file.write(
+                python_code.format(
+                    "{}.{}".format(settings, fformat),
+                    "{}.{}".format(secrets, fformat),
                 )
+            )
+            file.close()
             if gitignore.exists():
-                file = gitignore.read_text(encoding="utf-8")
-                file += config_ignore.format(secrets + ".*")
-                with open(gitignore, "r+", encoding="utf-8") as file:
-                    text = file.read() + config_ignore.format(secrets + ".*")
-                    file.seek(0)
-                    file.write(text)
+                gitignore_file = open(str(gitignore), "r+", encoding="utf-8")
+                text = file.read() + config_ignore.format(secrets + ".*")
+                gitignore_file.seek(0)
+                gitignore_file.write(text)
         else:
-            with open(Path("settings.py"), "w", encoding="utf-8") as file:
-                file.write(python_env_only)
+            file = open(str(Path("settings.py")), "w", encoding="utf-8")
+            file.write(python_env_only)
+            file.close()
         print("Created: settings.py")
 
 
