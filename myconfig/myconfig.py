@@ -56,17 +56,17 @@ class Parser:
 
 
 class MyConfig(metaclass=Singleton):
-    _filenames = PathDescriptor("_MyConfig__filenames")
+    _filenames = PathDescriptor("_filenames")
 
     def __init__(self, filenames: List[str] = None) -> None:
         if filenames:
             self._filenames = filenames
             Parser.parser(self, self._filenames)
-        if self.ENV.exists():
+        if ENV.exists():
             file = open_file(ENV)
             for line in file:
                 key, value = line.strip("\n").split("=", 1)
-                value = Parser.env_parse(self)
+                value = Parser.env_parse(value)
                 self.__setattr__(key, value)
 
     def __getattr__(self, key: str) -> Any:
@@ -114,7 +114,7 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("-i", "--init", default=None, type=str, nargs="?")
     args = parser.parse_args()
-    return MyConfig.init(args.init)
+    return init(args.init)
 
 
 if __name__ == "__main__":

@@ -7,7 +7,7 @@ except ImportError:
     from distutils.core import setup
 
 with open("myconfig/__init__.py", encoding="utf-8") as f:
-    version = search(r"__version__ = '(.*?)'", f.read()).group(1)
+    version = search(r'__version__ = "(.*?)"', f.read()).group(1)
 
 BASE_DIR = Path(__file__).parent
 README = BASE_DIR.joinpath("README.md").read_text(encoding="utf-8")
