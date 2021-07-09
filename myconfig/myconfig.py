@@ -1,21 +1,14 @@
 import argparse
 import json
-from .const import (
-    CODE_EXAMPLE,
-    CONFIG_IGNORE,
-    ENV,
-    ENV_ONLY_EXAMPLE,
-    FORMATS,
-    GITIGNORE,
-    PathDescriptor,
-    Singleton,
-    open_file,
-)
 from pathlib import Path
 from typing import Any, List
 
 import toml
 import yaml
+
+from .const import (CODE_EXAMPLE, CONFIG_IGNORE, ENV, ENV_ONLY_EXAMPLE,
+                    FORMATS, GITIGNORE, SECRETS, SETTINGS, PathDescriptor,
+                    Singleton, open_file)
 
 
 class Parser:
@@ -79,32 +72,26 @@ class MyConfig(metaclass=Singleton):
 
 
 def init(_format: str) -> None:
+    file = open(str(Path("settings.py")), "w", encoding="utf-8")
     if _format:
-        settings = "settings"
-        secrets = ".secrets"
-
         if _format not in FORMATS:
             raise Exception("Unknown format.")
-
-        for file in [settings, secrets]:
-            f = open(str(Path("{}.{}".format(file, _format))), "a", encoding="utf-8")
-            f.close()
-            print("Created: {}.{}".format(file, _format))
-        file = open(str(Path("settings.py")), "w", encoding="utf-8")
+        for _file in [SETTINGS, SECRETS]:
+            open(str(Path("%s.%s" % (_file, _format))), "a", encoding="utf-8").close()
+            print("Created: %s.%s" % (_file, _format))
         file.write(
             CODE_EXAMPLE.format(
-                "{}.{}".format(settings, _format),
-                "{}.{}".format(secrets, _format),
+                "%s.%s" % (SETTINGS, _format),
+                "%s.%s" % (SECRETS, _format),
             )
         )
         file.close()
         if GITIGNORE.exists():
-            GITIGNORE_file = open(str(GITIGNORE), "r+", encoding="utf-8")
-            text = file.read() + CONFIG_IGNORE.format(secrets + ".*")
-            GITIGNORE_file.seek(0)
-            GITIGNORE_file.write(text)
+            with open(str(GITIGNORE), "r+", encoding="utf-8") as gitignore_file:
+                text = gitignore_file.read() + CONFIG_IGNORE.format(SECRETS + ".*")
+                gitignore_file.seek(0)
+                gitignore_file.write(text)
     else:
-        file = open(str(Path("settings.py")), "w", encoding="utf-8")
         file.write(ENV_ONLY_EXAMPLE)
         file.close()
     print("Created: settings.py")

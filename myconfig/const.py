@@ -26,6 +26,8 @@ class PathDescriptor:
 
 
 FORMATS = ["json", "yaml", "yml", "toml"]
+SETTINGS = "settings"
+SECRETS = ".secrets"
 
 GITIGNORE = Path(".gitignore")
 CONFIG_IGNORE = "\n\n# myconfig\n{}"
