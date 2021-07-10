@@ -1,22 +1,17 @@
-from pathlib import Path
+from random import randint
 
-from myconfig import MyConfig
-
-env = ".env"
-
-with open(env, "w", encoding="utf-8") as file:
-    file.write(
-        """str = string
-int = 111
-bool = True
-list = [True, admin, 111]"""
-    )
+from myconfig.myconfig import Parser
 
 
-def test_env_parser():
-    config = MyConfig()
-    Path(env).unlink()
-    assert config.str == "string"
-    assert config.int == 111
-    assert config.bool is True
-    assert config.list == [True, "admin", 111]
+def test_env_parse_int():
+    _list = [str(randint(1, 100)) for i in range(10)]
+    for el in _list:
+        el = Parser.env_parse(el)
+        assert isinstance(el, int) is True
+
+
+def test_env_parse_bool():
+    _list = [str(bool(randint(0, 1))) for i in range(10)]
+    for el in _list:
+        el = Parser.env_parse(el)
+        assert isinstance(el, bool) is True
