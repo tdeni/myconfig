@@ -6,9 +6,30 @@ from typing import Any, List
 import toml
 import yaml
 
-from .const import (CODE_EXAMPLE, CONFIG_IGNORE, ENV, ENV_ONLY_EXAMPLE,
-                    FORMATS, GITIGNORE, SECRETS, SETTINGS, PathDescriptor,
-                    Singleton, open_file)
+from .const import (
+    CODE_EXAMPLE,
+    CONFIG_IGNORE,
+    ENV,
+    ENV_ONLY_EXAMPLE,
+    FORMATS,
+    GITIGNORE,
+    SECRETS,
+    SETTINGS,
+    PathDescriptor,
+    Singleton,
+    open_file,
+)
+
+
+class Store(dict):
+    def __getitem__(self, k: str) -> Any:
+        return self.get(k, None)
+
+    def __setattr__(self, key: str, value: Any) -> None:
+        return super().__setitem__(key, value)
+
+    def __getattr__(self, key: str) -> Any:
+        return self.__getitem__(key)
 
 
 class Parser:
@@ -26,8 +47,10 @@ class Parser:
             _format = str(file).split(".")[-1]
             try:
                 data = Parser.switcher[_format.upper()](f)
-                for key in data.keys():
-                    obj.__setattr__(key.replace("-", "_"), data[key])
+                for key, value in data.items():
+                    if isinstance(value, dict):
+                        value = Store(**value)
+                    obj.__setattr__(key.replace("-", "_"), value)
                 f.close()
             except KeyError:
                 raise Exception("File format error")
@@ -36,8 +59,8 @@ class Parser:
     def env_parse(value: Any):
         if value.isdigit():
             return int(value)
-        elif value.lower() in ["true", "false"]:
-            if value.lower() == "true":
+        elif value.lower() in ["true", "false", "0", "1", 0, 1]:
+            if value.lower() in ["true", "1", 1]:
                 return True
             return False
         elif value.startswith("[") and value.endswith("]"):
@@ -50,6 +73,7 @@ class Parser:
 
 class MyConfig(metaclass=Singleton):
     _filenames = PathDescriptor("_filenames")
+    _store = Store()
 
     def __init__(self, filenames: List[str] = None) -> None:
         if filenames:
@@ -62,13 +86,21 @@ class MyConfig(metaclass=Singleton):
                 value = Parser.env_parse(value)
                 self.__setattr__(key, value)
 
-    def __getattr__(self, key: str) -> Any:
-        return self.__dict__.get(key, None)
+    def __getitem__(self, key: str) -> Any:
+        return self._store.__getitem__(key)
 
-    def __setattr__(self, name: str, value: Any) -> None:
-        if name == "_filenames":
-            return super().__setattr__(name, value)
-        return self.__dict__.update({name: value})
+    def __setitem__(self, key: str, value: Any) -> None:
+        if key.startswith("_"):
+            return super().__setattr__(key, value)
+        return self._store.__setitem__(key, value)
+
+    def __getattr__(self, key: str) -> Any:
+        return self._store.__getattr__(key)
+
+    def __setattr__(self, key: str, value: Any) -> None:
+        if key.startswith("_"):
+            return super().__setattr__(key, value)
+        return self._store.__setattr__(key, value)
 
 
 def init(_format: str) -> None:
