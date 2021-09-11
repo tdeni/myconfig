@@ -23,11 +23,11 @@ cd project/path/
 myconfig -i json
 
 
-Configuring your Python project environment
---------------------------------------------
-File `settings.py` was created.
-The `settings.json` file was created to hold public settings and `.secrets.json` file was created to hold private settings.
-Also `.secrets.*` was added to `.gitignore`.
+Configuring your Python project environment...
+
+File settings.py was created.
+The settings.json file was created to hold public settings and .secrets.json file was created to hold private settings.
+Also .secrets.json was added to .gitignore.
 ```
 
 > You can also use other formats: **myconfig -i** \<*format*> (**json** | **yaml** | **toml**)
@@ -42,7 +42,8 @@ Add to `settings.json` common project settings:
     "ips": ["127.0.0.1", "198.*.*.*"],
     "database": {
         "name": "database_name",
-        "port": 5555}
+        "port": 5555
+    }
 }
 ```
 
@@ -50,7 +51,9 @@ Or put private settings in `.secrets.json`:
 
 ```json
 {
-    "password": 53156
+    "database": {
+        "password": 53156
+    }
 }
 ```
 
@@ -60,7 +63,8 @@ Import the `config` object from `settings.py` in your code
 from settings import config
 
 print(config.username)
-print(config.database.get('name'))
+print(config.database.name)
+print(config.database.password)
 ```
 
 >File `settings.py`
