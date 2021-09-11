@@ -18,7 +18,10 @@ from .const import (
     SETTINGS,
     PathDescriptor,
     Singleton,
+    bold,
+    green,
     open_file,
+    underline,
 )
 
 
@@ -118,7 +121,7 @@ def gitignore_file(_format: str, secrets: str):
                     lines.insert(i + 1, f"{secrets}.{_format}\n")
                     gitignore.seek(0)
                     gitignore.writelines(lines)
-                    return
+                    return True
             nl = ""
             if not lines[-1].endswith("\n"):
                 nl += "\n\n"
@@ -126,27 +129,38 @@ def gitignore_file(_format: str, secrets: str):
                 nl += "\n"
             text = nl + CONFIG_IGNORE.format(secrets + "." + _format)
             gitignore.write(text)
+            return True
+    return False
 
 
 def init(_format: str, settings: str, secrets: str) -> None:
+    print(underline(green("Configuring your Python project environment...\n")))
+
     file = open(str(Path("settings.py")), "w", encoding="utf-8")
+    print(f"File {bold(green('settings.py'))} was created.")
+
     if _format:
         if _format not in FORMATS:
             raise Exception("Unknown format.")
         for _file in [settings, secrets]:
             open(str(Path("%s.%s" % (_file, _format))), "a", encoding="utf-8").close()
-            print("Created: %s.%s" % (_file, _format))
+        print(
+            f"The {bold(green(settings + '.' +_format))} file was created to hold public settings "
+            f"and {bold(green(secrets + '.' + _format))} file was created to hold private settings."
+        )
         file.write(
             CODE_EXAMPLE.format(
                 "%s.%s" % (settings, _format),
                 "%s.%s" % (secrets, _format),
             )
         )
-        gitignore_file(_format, secrets)
+        if gitignore_file(_format, secrets):
+            print(
+                f"Also {bold(green(secrets + '.' + _format))} was added to .gitignore."
+            )
     else:
         file.write(ENV_ONLY_EXAMPLE)
     file.close()
-    print("Created: settings.py")
 
 
 def main() -> None:
@@ -155,7 +169,9 @@ def main() -> None:
     parser.add_argument("-s", "--settings", default=SETTINGS, type=str, nargs="?")
     parser.add_argument("-S", "--secrets", default=SECRETS, type=str, nargs="?")
     args = parser.parse_args()
-    return init(args.init.lower(), args.settings, args.secrets)
+    if args.init:
+        args.init.lower()
+    return init(args.init, args.settings, args.secrets)
 
 
 if __name__ == "__main__":

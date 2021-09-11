@@ -26,6 +26,22 @@ class PathDescriptor:
         obj.__dict__[self.name] = value
 
 
+def underline(string: str) -> str:
+    return "\033[4m" + string + end()
+
+
+def bold(string: str) -> str:
+    return "\033[1m" + string + end()
+
+
+def green(string: str) -> str:
+    return "\033[92m" + string + end()
+
+
+def end() -> str:
+    return "\033[0m"
+
+
 FORMATS = ["json", "yaml", "yml", "toml"]
 SETTINGS = "settings"
 SECRETS = ".secrets"
