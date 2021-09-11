@@ -9,6 +9,7 @@ import yaml
 from .const import (
     CODE_EXAMPLE,
     CONFIG_IGNORE,
+    CONFIG_REGEXP,
     ENV,
     ENV_ONLY_EXAMPLE,
     FORMATS,
@@ -108,6 +109,25 @@ class MyConfig(metaclass=Singleton):
         return setattr(self._store, key, value)
 
 
+def gitignore_file(_format: str, secrets: str):
+    if GITIGNORE.exists():
+        with open(str(GITIGNORE), "r+", encoding="utf-8") as gitignore:
+            lines = gitignore.readlines()
+            for i, line in enumerate(lines.copy()):
+                if CONFIG_REGEXP.match(line):
+                    lines.insert(i + 1, f"{secrets}.{_format}\n")
+                    gitignore.seek(0)
+                    gitignore.writelines(lines)
+                    return
+            nl = ""
+            if not lines[-1].endswith("\n"):
+                nl += "\n\n"
+            else:
+                nl += "\n"
+            text = nl + CONFIG_IGNORE.format(secrets + "." + _format)
+            gitignore.write(text)
+
+
 def init(_format: str, settings: str, secrets: str) -> None:
     file = open(str(Path("settings.py")), "w", encoding="utf-8")
     if _format:
@@ -122,14 +142,10 @@ def init(_format: str, settings: str, secrets: str) -> None:
                 "%s.%s" % (secrets, _format),
             )
         )
-        file.close()
-        if GITIGNORE.exists():
-            with open(str(GITIGNORE), "a", encoding="utf-8") as gitignore_file:
-                text = CONFIG_IGNORE.format(secrets + "." + _format)
-                gitignore_file.write(text)
+        gitignore_file(_format, secrets)
     else:
         file.write(ENV_ONLY_EXAMPLE)
-        file.close()
+    file.close()
     print("Created: settings.py")
 
 

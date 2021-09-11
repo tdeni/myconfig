@@ -1,4 +1,5 @@
 from pathlib import Path
+from re import compile
 
 
 class Singleton(type):
@@ -30,7 +31,8 @@ SETTINGS = "settings"
 SECRETS = ".secrets"
 
 GITIGNORE = Path(".gitignore")
-CONFIG_IGNORE = "\n\n# myconfig\n{}"
+CONFIG_IGNORE = "# myconfig\n{}\n"
+CONFIG_REGEXP = compile(r"#\s?myconfig\n?")
 
 ENV = Path(".env")
 ENV_ONLY_EXAMPLE = "from myconfig import MyConfig\n\nconfig = MyConfig()\n"
