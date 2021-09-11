@@ -45,15 +45,17 @@ class Parser:
         for file in filenames:
             f = open_file(file)
             _format = str(file).split(".")[-1]
-            try:
-                data = Parser.switcher[_format.upper()](f)
-                for key, value in data.items():
-                    if isinstance(value, dict):
-                        value = Store(**value)
-                    obj.__setattr__(key.replace("-", "_"), value)
-                f.close()
-            except KeyError:
-                raise Exception("File format error")
+            data = Parser.switcher[_format.upper()](f)
+            for key, value in data.items():
+                if isinstance(value, dict):
+                    value = Store(**value)
+                key = key.replace("-", "_")
+                store = getattr(obj, key)
+                if isinstance(store, Store):
+                    store.update(value)
+                    continue
+                setattr(obj, key, value)
+            f.close()
 
     @staticmethod
     def env_parse(value: Any):
@@ -84,7 +86,10 @@ class MyConfig(metaclass=Singleton):
             for line in file:
                 key, value = line.strip("\n").split("=", 1)
                 value = Parser.env_parse(value)
-                self.__setattr__(key, value)
+                setattr(self, key, value)
+
+    def __str__(self) -> str:
+        return str(self._store)
 
     def __getitem__(self, key: str) -> Any:
         return self._store.__getitem__(key)
@@ -95,33 +100,32 @@ class MyConfig(metaclass=Singleton):
         return self._store.__setitem__(key, value)
 
     def __getattr__(self, key: str) -> Any:
-        return self._store.__getattr__(key)
+        return getattr(self._store, key)
 
     def __setattr__(self, key: str, value: Any) -> None:
         if key.startswith("_"):
             return super().__setattr__(key, value)
-        return self._store.__setattr__(key, value)
+        return setattr(self._store, key, value)
 
 
-def init(_format: str) -> None:
+def init(_format: str, settings: str, secrets: str) -> None:
     file = open(str(Path("settings.py")), "w", encoding="utf-8")
     if _format:
         if _format not in FORMATS:
             raise Exception("Unknown format.")
-        for _file in [SETTINGS, SECRETS]:
+        for _file in [settings, secrets]:
             open(str(Path("%s.%s" % (_file, _format))), "a", encoding="utf-8").close()
             print("Created: %s.%s" % (_file, _format))
         file.write(
             CODE_EXAMPLE.format(
-                "%s.%s" % (SETTINGS, _format),
-                "%s.%s" % (SECRETS, _format),
+                "%s.%s" % (settings, _format),
+                "%s.%s" % (secrets, _format),
             )
         )
         file.close()
         if GITIGNORE.exists():
-            with open(str(GITIGNORE), "r+", encoding="utf-8") as gitignore_file:
-                text = gitignore_file.read() + CONFIG_IGNORE.format(SECRETS + ".*")
-                gitignore_file.seek(0)
+            with open(str(GITIGNORE), "a", encoding="utf-8") as gitignore_file:
+                text = CONFIG_IGNORE.format(secrets + "." + _format)
                 gitignore_file.write(text)
     else:
         file.write(ENV_ONLY_EXAMPLE)
@@ -132,8 +136,10 @@ def init(_format: str) -> None:
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("-i", "--init", default=None, type=str, nargs="?")
+    parser.add_argument("-s", "--settings", default=SETTINGS, type=str, nargs="?")
+    parser.add_argument("-S", "--secrets", default=SECRETS, type=str, nargs="?")
     args = parser.parse_args()
-    return init(args.init)
+    return init(args.init.lower(), args.settings, args.secrets)
 
 
 if __name__ == "__main__":
