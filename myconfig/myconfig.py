@@ -65,8 +65,8 @@ class Parser:
     def env_parse(value: Any):
         if value.isdigit():
             return int(value)
-        elif value.lower() in ["true", "false", "0", "1", 0, 1]:
-            if value.lower() in ["true", "1", 1]:
+        elif value.lower() in ["true", "false"]:
+            if value.lower() == "true":
                 return True
             return False
         elif value.startswith("[") and value.endswith("]"):
