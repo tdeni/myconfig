@@ -18,10 +18,8 @@ setup(
     description="Python Projects Configuration Manager",
     long_description=README,
     long_description_content_type="text/markdown",
-    url="https://github.com/azureswastika/myconfig",
-    download_url="https://github.com/azureswastika/myconfig/archive/{}.tar.gz".format(
-        version
-    ),
+    url="https://github.com/tdeni/myconfig",
+    download_url="https://github.com/tdeni/myconfig/archive/{}.tar.gz".format(version),
     author="Deni",
     license="MIT license",
     packages=["myconfig"],
@@ -38,6 +36,6 @@ setup(
         "Programming Language :: Python :: 3 :: Only",
     ],
     entry_points={"console_scripts": ["myconfig = myconfig:main"]},
-    install_requires=["PyYAML>=5.4.1", "toml>=0.10.2"],
+    install_requires=["PyYAML>=6.0", "toml>=0.10.2"],
     python_requires=">=3.6",
 )

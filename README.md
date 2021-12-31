@@ -3,10 +3,10 @@
 ![PyPI](/logos/logo.png)
 
 [![PyPI](https://img.shields.io/pypi/v/myconfig.svg)](https://pypi.python.org/pypi/myconfig)
-[![Build Status](https://travis-ci.org/azureswastika/myconfig.svg?branch=main)](https://travis-ci.org/azureswastika/myconfig)
+[![Build Status](https://travis-ci.org/tdeni/myconfig.svg?branch=main)](https://travis-ci.org/tdeni/myconfig)
 ![PyPI](https://img.shields.io/pypi/pyversions/myconfig.svg)
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/myconfig)
-[![GitHub](https://img.shields.io/github/license/azureswastika/myconfig)](https://github.com/azureswastika/myconfig/blob/main/LICENSE)
+[![GitHub](https://img.shields.io/github/license/tdeni/myconfig)](https://github.com/tdeni/myconfig/blob/main/LICENSE)
 
 ## Quick start
 
