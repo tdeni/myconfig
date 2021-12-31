@@ -1,7 +1,7 @@
 import argparse
 import json
 from pathlib import Path
-from typing import Any, List
+from typing import Any, List, Union
 
 import toml
 import yaml
@@ -10,7 +10,6 @@ from .const import (
     CODE_EXAMPLE,
     CONFIG_IGNORE,
     CONFIG_REGEXP,
-    ENV,
     ENV_ONLY_EXAMPLE,
     FORMATS,
     GITIGNORE,
@@ -81,16 +80,22 @@ class MyConfig(metaclass=Singleton):
     _filenames = PathDescriptor("_filenames")
     _store = Store()
 
-    def __init__(self, filenames: List[str] = None) -> None:
+    def __init__(
+        self,
+        filenames: List[Union[str, Path]] = None,
+        env_file: Union[str, Path] = ".env",
+    ) -> None:
+        env_file = Path(env_file)
         if filenames:
             self._filenames = filenames
             Parser.parser(self, self._filenames)
-        if ENV.exists():
-            file = open_file(ENV)
+        if env_file.exists():
+            file = open_file(env_file)
             for line in file:
                 key, value = line.strip("\n").split("=", 1)
                 value = Parser.env_parse(value)
                 setattr(self, key, value)
+            file.close()
 
     def __str__(self) -> str:
         return str(self._store)

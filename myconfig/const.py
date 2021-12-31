@@ -1,5 +1,6 @@
 from pathlib import Path
 from re import compile
+from typing import List
 
 
 class Singleton(type):
@@ -15,7 +16,7 @@ class PathDescriptor:
     def __init__(self, name):
         self.name = name
 
-    def __set__(self, obj, value):
+    def __set__(self, obj, value: List):
         value = [Path(path) for path in value]
         for path in value:
             _format = str(path).split(".")[-1].lower()
@@ -50,7 +51,6 @@ GITIGNORE = Path(".gitignore")
 CONFIG_IGNORE = "# myconfig\n{}\n"
 CONFIG_REGEXP = compile(r"#\s?myconfig\n?")
 
-ENV = Path(".env")
 ENV_ONLY_EXAMPLE = "from myconfig import MyConfig\n\nconfig = MyConfig()\n"
 CODE_EXAMPLE = "from myconfig import MyConfig\n\nconfig = MyConfig(['{}', '{}'])\n"
 
